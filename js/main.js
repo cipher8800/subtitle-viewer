@@ -1,10 +1,11 @@
 const dropZone = document.getElementById("dropZone");
-const fileInput = document.getElementById("fileInput");
-const outputText = document.getElementById("outputText");
-const copyBtn = document.getElementById("copyBtn");
+const outputTextEl = document.querySelector(".output-text");
+const menuModal = document.querySelector(".menu-modal");
+const previewTitleEl = document.querySelector(".preview .title");
 
 let rawContent = "";
 let currentFileName = "converted_subtitle.txt";
+let outputText = "";
 
 // Drag and Drop listeners
 ["dragenter", "dragover"].forEach((eventName) => {
@@ -26,17 +27,18 @@ dropZone.addEventListener("drop", (e) => {
   if (file) handleFile(file);
 });
 
-fileInput.addEventListener("change", (e) => {
-  const file = e.target.files[0];
-  if (file) handleFile(file);
+menuModal.querySelectorAll(".items").forEach((el) => {
+  el.addEventListener("click", ()=> toggleMenuModal(false));
 });
 
 // File Processing
 async function handleFile(file) {
   currentFileName = file.name.replace(/\.[^/.]+$/, "") + ".txt";
 
-  rawContent = await getFileText(file)
-  parseSubtitle()
+  rawContent = await getFileText(file);
+  parseSubtitle();
+  dropZone.classList.add("hidden");
+  previewTitleEl.textContent = file.name;
 }
 
 // Core Parsing Logic
@@ -64,24 +66,27 @@ function parseSubtitle() {
     .map((line) => line.trim())
     .filter((line) => line.length > 0 && !/^\d+$/.test(line));
 
-  outputText.value = lines.join("\n");
+  outputText = lines.join("<br>");
+  outputTextEl.innerHTML = outputText;
 }
 
-function copyToCB() {
-  if (!outputText.value) return;
-  navigator.clipboard.writeText(outputText.value).then(() => {
-    const originalText = copyBtn.innerText;
-    copyBtn.innerText = "Copied!";
-    setTimeout(() => (copyBtn.innerText = originalText), 1500);
-  });
+async function copyToCB() {
+  if (!outputText) return;
+  await navigator.clipboard.writeText(outputText);
+  Toast.show("Text copied to clipboard");
 }
 
 function downloadText() {
-  const content = outputText.value;
+  const content = outputText;
   if (!content) return;
 
   const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
   const url = URL.createObjectURL(blob);
-  
-  download(url, currentFileName)
+
+  download(url, currentFileName);
+}
+
+function toggleMenuModal(force) {
+  const shouldHide = force !== undefined ? !force : undefined;
+  menuModal.classList.toggle("hidden", shouldHide);
 }

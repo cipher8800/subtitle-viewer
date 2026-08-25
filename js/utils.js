@@ -72,3 +72,7 @@ function getFileText(file) {
     reader.readAsText(file);
   });
 }
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

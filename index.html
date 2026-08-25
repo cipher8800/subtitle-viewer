@@ -10,6 +10,7 @@
     <script src="js/constants.js" defer></script>
     <script src="js/utils.js" defer></script>
     <script src="js/main.js" defer></script>
+    <script src="js/toast.js" defer></script>
   </head>
   <body class="dark-theme">
     <div class="app container">
@@ -18,25 +19,48 @@
         <p>Convert .SRT or .VTT files into plain text instantly in your browser.</p>
       </header>
 
-      <div class="drop-zone" id="dropZone">
-        <label for="fileInput">
-          <strong>Drop your subtitle file here</strong>
-          <span style="color: var(--muted); font-size: 0.85rem">Supports .srt and .vtt</span>
-          <span class="button">Browse File</span>
-        </label>
-        <input type="file" id="fileInput" accept=".srt,.vtt" />
-      </div>
+      <label class="drop-zone" id="dropZone">
+        <strong>Drop your subtitle file here</strong>
+        <span>Supports .srt and .vtt</span>
+        <span class="button">Browse File</span>
+        <input type="file" accept=".srt,.vtt" hidden onchange="handleFile(event.target.files[0])" />
+      </label>
 
-      <div class="editor">
-        <div class="editor-header">
-          <label for="outputText"><strong>Converted Text</strong></label>
-          <div class="editor-actions">
-            <button class="button" id="copyBtn" onclick="copyToCB()">Copy Text</button>
-            <button class="button" onclick="downloadText()">Download .txt</button>
-          </div>
+      <div class="preview">
+        <div class="preview-header">
+          <div class="title truncated">Converted Text</div>
+          <button class="menu-btn" onclick="toggleMenuModal()">
+            <i class="bi bi-three-dots"></i>
+          </button>
         </div>
-        <textarea id="outputText" placeholder="Your converted text will appear here..."></textarea>
+        <div class="output-text">
+          <div class="placeholder">Your converted text will appear here...</div>
+        </div>
       </div>
     </div>
+
+    <!-- Menu modal -->
+    <div class="menu-modal modal hidden" onclick="toggleMenuModal()">
+      <div class="modal-content" onclick="stopPropagation(event)">
+        <div class="items">
+          <label class="file-input">
+            <i class="bi bi-file-earmark-arrow-up"></i>
+            Browse file
+            <input type="file" accept=".srt,.vtt" hidden onchange="handleFile(event.target.files[0])" />
+          </label>
+          <div class="copy" onclick="copyToCB()">
+            <i class="bi bi-clipboard"></i>
+            Copy Text
+          </div>
+          <div class="download" onclick="downloadText()">
+            <i class="bi bi-download"></i>
+            Download
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast"></div>
+
   </body>
 </html>
