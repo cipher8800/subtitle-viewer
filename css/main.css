@@ -15,6 +15,7 @@
   --green: #4caf50;
   --blue: #3f51b5;
   --lightblue: #2196f3;
+  --overlay-gradient: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5));
 }
 
 .dark-theme {
@@ -22,6 +23,7 @@
   --text-color: #eee;
   --border-color: rgba(255, 255, 255, 0.5);
   --label-color: #333;
+  --overlay-gradient: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5));
 }
 
 * {
@@ -75,10 +77,9 @@ body {
 }
 
 .container {
-  max-width: 992px;
+  max-width: 576px;
   margin: auto;
 }
-
 
 .modal {
   position: fixed;
@@ -149,7 +150,6 @@ header p {
   border-radius: 12px;
   padding: 2.5rem 1.5rem;
   text-align: center;
-  background: var(--label-color);
   cursor: pointer;
 }
 
@@ -177,15 +177,17 @@ header p {
 .preview .output-text {
   flex: 1;
   width: 100%;
-  background: var(--label-color);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   color: var(--text-color);
   padding: 10px;
-  line-height: 1.5;
   min-height: 0;
   overflow-y: auto;
   user-select: none;
+}
+
+.preview .subtitle {
+  line-height: 1.5;
 }
 
 .preview .subtitle.active {
@@ -230,7 +232,6 @@ header p {
 }
 
 .toast {
-  pointer-events: none;
   position: fixed;
   top: 10px;
   left: 50%;
@@ -250,8 +251,6 @@ header p {
   border-radius: 5px;
   width: max-content;
   max-width: 100%;
-  display: flex;
-  align-items: center;
 }
 
 /* Medium screens (Tablets, up to 768px wide) */

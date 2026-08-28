@@ -39,6 +39,17 @@ function getFileDataUrl(file) {
   });
 }
 
+function dataURLtoBlobURL(dataurl) {
+  const [header, base64] = dataurl.split(",");
+  const mime = header.match(/:(.*?);/)[1];
+  const binary = atob(base64);
+  const array = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    array[i] = binary.charCodeAt(i);
+  }
+  return URL.createObjectURL(new Blob([array], { type: mime }));
+}
+
 function download(url, name) {
   const link = document.createElement("a");
 
@@ -92,5 +103,5 @@ function formatTime(seconds) {
 }
 
 function roundFloat(num) {
-  return Math.round(num * 100) / 100
+  return Math.round(num * 100) / 100;
 }

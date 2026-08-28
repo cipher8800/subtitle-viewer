@@ -10,6 +10,12 @@ let outputText = "";
 let currentSubtitles = [];
 let duration = 0;
 let currentTime = 0;
+let activeSubtitleEl = null;
+let currentCover = load("currentCover", null);
+
+document.addEventListener("DOMContentLoaded", () => {
+  updateCover();
+});
 
 // Drag and Drop listeners
 ["dragenter", "dragover"].forEach((eventName) => {
@@ -36,13 +42,13 @@ menuModal.querySelectorAll(".items").forEach((el) => {
 });
 
 progressInput.addEventListener("input", (e) => {
-  if (!outputText) return
-  currentTime = e.target.value
-  updateUI()
-})
+  if (!outputText) return;
+  currentTime = e.target.value;
+  updateUI();
+});
 
 progressInput.addEventListener("change", (e) => {
-  if (outputText) seekTo(e.target.value)
+  if (outputText) seekTo(e.target.value);
   toggleMenuModal(false);
 });
 
@@ -63,11 +69,14 @@ async function handleFile(file) {
   parseSubtitle(text);
   dropZone.classList.add("hidden");
   previewTitleEl.textContent = file.name;
-  updateUI()
+  toggleFullscreen(true);
+  updateUI();
 }
 
 function updateUI() {
   timeDisplay.textContent = `${formatTime(currentTime)} / ${formatTime(duration)}`;
+  document.querySelector(".subtitle.active")?.classList.remove("active");
+  activeSubtitleEl?.classList.add("active");
 }
 
 // Convert "HH:MM:SS,ms" or "MM:SS.ms" to seconds
@@ -123,7 +132,7 @@ function parseSubtitle(rawText) {
       }
     });
 
-    if (textLines.length > 0) {
+    if (textLines.length > 0 && !textLines[0].includes("[Music]") && !textLines[0].includes("[Applause]") && !textLines[0].includes("Heat.")) {
       currentSubtitles.push({
         startTime,
         endTime,
@@ -142,10 +151,9 @@ function parseSubtitle(rawText) {
   progressInput.max = duration;
 }
 
-// Time seeking function
 function seekTo(seconds) {
   if (!outputText) return;
-  const subtitle = currentSubtitles.find((subtitle) => subtitle.startTime >= seconds - 5);
+  const subtitle = currentSubtitles.find((subtitle) => subtitle.startTime >= seconds - 10);
   if (!subtitle) return;
 
   const subtitleEl = document.querySelector(`[data-start-time="${subtitle.startTime}"]`);
@@ -153,6 +161,8 @@ function seekTo(seconds) {
     behavior: "smooth",
     block: "center",
   });
+
+  activeSubtitleEl = subtitleEl;
 
   updateUI();
 }
@@ -176,4 +186,25 @@ function downloadText() {
 function toggleMenuModal(force) {
   const shouldHide = force !== undefined ? !force : undefined;
   menuModal.classList.toggle("hidden", shouldHide);
+}
+
+async function changeCover(file) {
+  if (!file) return;
+
+  try {
+    currentCover = await getFileDataUrl(file);
+    save("currentCover", currentCover);
+    updateCover();
+  } catch (error) {
+    Toast.show(error);
+  }
+}
+
+function updateCover() {
+  if (!currentCover) return;
+  document.body.style.background = `
+    var(--overlay-gradient),
+    url("${dataURLtoBlobURL(currentCover)}")
+    center / cover no-repeat
+  `;
 }

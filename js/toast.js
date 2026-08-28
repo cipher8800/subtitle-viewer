@@ -3,7 +3,7 @@ const Toast = (() => {
 
   currentItems = [];
   max = 1;
-  time = 2;
+  time = 3;
 
   async function show(message) {
     element.classList.remove("hidden");
