@@ -191,7 +191,7 @@ header p {
 }
 
 .preview .subtitle.active {
-  background-color: var(--bg-color);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .menu-modal .modal-content {
