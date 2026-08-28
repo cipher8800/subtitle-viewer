@@ -1,1 +1,1 @@
-const projectName = "subtitle-converter"
+const projectName = "subtitle-viewer"

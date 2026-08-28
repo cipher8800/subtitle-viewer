@@ -185,6 +185,11 @@ header p {
   line-height: 1.5;
   min-height: 0;
   overflow-y: auto;
+  user-select: none;
+}
+
+.preview .subtitle.active {
+  background-color: var(--bg-color);
 }
 
 .menu-modal .modal-content {
@@ -200,6 +205,28 @@ header p {
 
 .menu-modal .items > * {
   cursor: pointer;
+}
+
+.progress-bar {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  width: calc(100% - 20px);
+}
+
+.progress-bar input {
+  flex: 1;
+}
+
+.progress-bar .time-display {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  right: 0;
+  background-color: black;
+  color: white;
+  padding: 2px;
 }
 
 .toast {

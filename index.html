@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Subtitle Converter</title>
+    <title>Subtitle Viewer</title>
     <link rel="icon" type="image/png" href="favicon.png" />
     <link href="vendor/bootstrap-icons-1.13.1/bootstrap-icons.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="css/main.css" />
@@ -15,8 +15,8 @@
   <body class="dark-theme">
     <div class="app container">
       <header>
-        <h1>Subtitle Converter</h1>
-        <p>Convert .SRT or .VTT files into plain text instantly in your browser.</p>
+        <h1>Subtitle Viewer</h1>
+        <p>View .SRT or .VTT files as plain text instantly in your browser.</p>
       </header>
 
       <label class="drop-zone" id="dropZone">
@@ -50,7 +50,7 @@
           </label>
           <div class="copy" onclick="copyToCB()">
             <i class="bi bi-clipboard"></i>
-            Copy Text
+            Copy text
           </div>
           <div class="download" onclick="downloadText()">
             <i class="bi bi-download"></i>
@@ -58,9 +58,13 @@
           </div>
         </div>
       </div>
+      
+      <div class="progress-bar container" onclick="stopPropagation(event)">
+        <input type="range" min="0" value="0" />
+        <div class="time-display">--:-- / --:--</div>
+      </div>
     </div>
 
     <div class="toast"></div>
-
   </body>
 </html>

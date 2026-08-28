@@ -76,3 +76,21 @@ function getFileText(file) {
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+function formatTime(seconds) {
+  const hrs = Math.floor(seconds / 3600);
+  const mins = Math.floor((seconds % 3600) / 60);
+  const secs = Math.floor(seconds % 60);
+
+  const formattedMins = String(mins).padStart(2, "0");
+  const formattedSecs = String(secs).padStart(2, "0");
+
+  if (hrs > 0) {
+    return `${hrs}:${formattedMins}:${formattedSecs}`;
+  }
+  return `${formattedMins}:${formattedSecs}`;
+}
+
+function roundFloat(num) {
+  return Math.round(num * 100) / 100
+}
