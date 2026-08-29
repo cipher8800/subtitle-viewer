@@ -162,8 +162,8 @@ function parseSubtitle(rawText) {
     });
 
     if (textLines.length > 0) {
-      const isStandardLine = /\[.*\]|heat\./i.test(textLines[0]);
-      if (isStandardLine) {
+      const isFakeLine = /\[.*\]|heat\./i.test(textLines[0]);
+      if (!isFakeLine) {
         currentSubtitles.push({
           startTime,
           endTime,
