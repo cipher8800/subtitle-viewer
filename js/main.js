@@ -161,12 +161,15 @@ function parseSubtitle(rawText) {
       }
     });
 
-    if (textLines.length > 0 && !textLines[0].includes("[Music]") && !textLines[0].includes("[Applause]") && !textLines[0].includes("Heat.")) {
-      currentSubtitles.push({
-        startTime,
-        endTime,
-        text: textLines.join(" "),
-      });
+    if (textLines.length > 0) {
+      const isStandardLine = /\[.*\]|heat\./i.test(textLines[0]);
+      if (isStandardLine) {
+        currentSubtitles.push({
+          startTime,
+          endTime,
+          text: textLines.join(" "),
+        });
+      }
     }
   });
 
