@@ -162,12 +162,18 @@ function parseSubtitle(rawText) {
     });
 
     if (textLines.length > 0) {
-      const isFakeLine = /\[.*\]|heat\./i.test(textLines[0]);
-      if (!isFakeLine) {
+      // Strip out bracketed text like [music] or "heat." case-insensitively
+      const cleanedText = textLines
+        .join(" ")
+        .replace(/\[.*?\]|heat\./gi, "")
+        .replace(/\s+/g, " ")
+        .trim();
+
+      if (cleanedText.length > 0) {
         currentSubtitles.push({
           startTime,
           endTime,
-          text: textLines.join(" "),
+          text: cleanedText,
         });
       }
     }
