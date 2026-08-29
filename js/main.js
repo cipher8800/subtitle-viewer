@@ -1,9 +1,10 @@
 const dropZone = document.getElementById("dropZone");
-const outputTextEl = document.querySelector(".output-text");
+const outputEl = document.querySelector(".output-text");
 const menuModal = document.querySelector(".menu-modal");
 const previewTitleEl = document.querySelector(".preview .title");
 const progressInput = document.querySelector(".progress-bar input");
 const timeDisplay = document.querySelector(".time-display");
+const historyModal = document.querySelector(".history-modal");
 
 let currentFileName = "converted_subtitle.txt";
 let outputText = "";
@@ -12,9 +13,13 @@ let duration = 0;
 let currentTime = 0;
 let activeSubtitleEl = null;
 let currentCover = load("currentCover", null);
+let historyItems = load("historyItems", []);
 
 document.addEventListener("DOMContentLoaded", () => {
   updateCover();
+  setInterval(() => {
+    updateHistory();
+  }, 1000);
 });
 
 // Drag and Drop listeners
@@ -34,7 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 dropZone.addEventListener("drop", (e) => {
   const file = e.dataTransfer.files[0];
-  if (file) handleFile(file);
+  if (file) openFile(file);
 });
 
 menuModal.querySelectorAll(".items").forEach((el) => {
@@ -52,25 +57,49 @@ progressInput.addEventListener("change", (e) => {
   toggleMenuModal(false);
 });
 
-outputTextEl.addEventListener("scroll", () => {
-  const maxScroll = outputTextEl.scrollHeight - outputTextEl.clientHeight;
-  const normalizedScroll = maxScroll > 0 ? roundFloat(outputTextEl.scrollTop / maxScroll) : 0;
+outputEl.addEventListener("scroll", () => {
+  const maxScroll = outputEl.scrollHeight - outputEl.clientHeight;
+  const normalizedScroll = maxScroll > 0 ? roundFloat(outputEl.scrollTop / maxScroll) : 0;
 
   currentTime = duration * normalizedScroll;
   progressInput.value = currentTime;
   updateUI();
 });
 
-// File Processing
-async function handleFile(file) {
-  currentFileName = file.name.replace(/\.[^/.]+$/, "") + ".txt";
+async function openFile(file) {
+  const fileName = file.name.replace(/\.[^/.]+$/, "") + ".txt";
 
+  const historyItemIndex = historyItems.findIndex((item) => item.title === fileName);
+  if (historyItemIndex !== -1) {
+    loadFromHistory(historyItemIndex);
+    return;
+  }
+
+  currentFileName = fileName;
+  currentTime = 0;
   const text = await getFileText(file);
   parseSubtitle(text);
+  displaySubtitle();
+  updateHistory();
+}
+
+function loadFromHistory(index) {
+  const historyItem = historyItems[index];
+
+  currentFileName = historyItem.title;
+  currentSubtitles = historyItem.subtitles;
+  currentTime = historyItem.time;
+
+  extractSubtitles();
+  displaySubtitle();
+  toggleHistoryModal(false);
+}
+
+function displaySubtitle() {
   dropZone.classList.add("hidden");
-  previewTitleEl.textContent = file.name;
-  toggleFullscreen(true);
+  previewTitleEl.textContent = currentFileName;
   updateUI();
+  seekTo(currentTime);
 }
 
 function updateUI() {
@@ -141,8 +170,12 @@ function parseSubtitle(rawText) {
     }
   });
 
-  // 4. Render HTML with timestamps and line break output for plain text export
-  outputTextEl.innerHTML = currentSubtitles.map((sub) => `<p class="subtitle" data-start-time="${sub.startTime}" data-end-time="${sub.endTime}">${sub.text}</p>`).join("");
+  extractSubtitles();
+}
+
+function extractSubtitles() {
+  // Render HTML with timestamps and line break output for plain text export
+  outputEl.innerHTML = currentSubtitles.map((sub) => `<p class="subtitle" data-start-time="${sub.startTime}" data-end-time="${sub.endTime}">${sub.text}</p>`).join("");
 
   // Plain-text formatted version for copying/downloading
   outputText = currentSubtitles.map((sub) => sub.text).join("\n");
@@ -162,7 +195,7 @@ function seekTo(seconds) {
     block: "center",
   });
 
-  activeSubtitleEl = subtitleEl;
+  if (seconds > 0) activeSubtitleEl = subtitleEl;
 
   updateUI();
 }
@@ -208,3 +241,73 @@ function updateCover() {
     center / cover no-repeat
   `;
 }
+
+function toggleHistoryModal(force) {
+  const shouldHide = force !== undefined ? !force : undefined;
+  historyModal.classList.toggle("hidden", shouldHide);
+
+  updateHistoryModal();
+}
+
+function updateHistoryModal() {
+  const itemsEl = historyModal.querySelector(".items");
+  itemsEl.innerHTML =
+    historyItems.length > 0
+      ? historyItems
+          .map(
+            (item, i) => `
+    <div class="truncated" onclick="loadFromHistory(${i})">${item.title}</div>
+  `,
+          )
+          .join("")
+      : "No history";
+}
+
+function updateHistory() {
+  if (!outputText) return;
+
+  const historyItem = historyItems.find((item) => item.title === currentFileName);
+
+  const newItem = {
+    title: currentFileName,
+    subtitles: currentSubtitles,
+    time: currentTime,
+  };
+
+  if (historyItem) {
+    Object.assign(historyItem, newItem);
+  } else {
+    historyItems.unshift(newItem);
+
+    if (historyItems.length > 5) {
+      historyItems.pop();
+    }
+  }
+
+  save("historyItems", historyItems);
+}
+
+function scrollOutputEl() {
+  outputEl.scrollBy({
+    top: 50,
+    left: 0,
+    behavior: "smooth",
+  });
+}
+
+const keyActions = {
+  Space: scrollOutputEl,
+  KeyF: toggleFullscreen,
+};
+
+document.addEventListener(
+  "keydown",
+  (event) => {
+    const action = keyActions[event.code];
+    if (action) {
+      event.preventDefault();
+      action();
+    }
+  },
+  true,
+);

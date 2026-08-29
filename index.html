@@ -23,15 +23,17 @@
         <strong>Drop your subtitle file here</strong>
         <span>Supports .srt and .vtt</span>
         <span class="button">Browse File</span>
-        <input type="file" accept=".srt,.vtt" hidden onchange="handleFile(event.target.files[0])" />
+        <input type="file" accept=".srt,.vtt" hidden onchange="openFile(event.target.files[0])" />
       </label>
 
       <div class="preview">
         <div class="preview-header">
           <div class="title truncated">Converted Text</div>
-          <button class="menu-btn" onclick="toggleMenuModal()">
-            <i class="bi bi-three-dots"></i>
-          </button>
+          <div class="actions">
+            <button class="menu-btn" onclick="toggleMenuModal()">
+              <i class="bi bi-three-dots"></i>
+            </button>
+          </div>
         </div>
         <div class="output-text">
           <div class="placeholder">Your converted text will appear here...</div>
@@ -40,19 +42,23 @@
     </div>
 
     <!-- Menu modal -->
-    <div class="menu-modal modal hidden" onclick="toggleMenuModal()">
+    <div class="menu-modal list-modal modal hidden" onclick="toggleMenuModal()">
       <div class="modal-content" onclick="stopPropagation(event)">
         <div class="items">
           <label class="file-input">
             <i class="bi bi-file-earmark-arrow-up"></i>
             Browse file
-            <input type="file" accept=".srt,.vtt" hidden onchange="handleFile(event.target.files[0])" />
+            <input type="file" accept=".srt,.vtt" hidden onchange="openFile(event.target.files[0])" />
           </label>
           <label class="cover">
             <i class="bi bi-image"></i>
             Cover
             <input type="file" accept="image/*" hidden oninput="changeCover(event.target.files[0])" />
           </label>
+          <div class="history" onclick="toggleHistoryModal()">
+            <i class="bi bi-arrow-counterclockwise"></i>
+            History
+          </div>
           <div class="copy" onclick="copyToCB()">
             <i class="bi bi-clipboard"></i>
             Copy text
@@ -71,6 +77,13 @@
       <div class="progress-bar container" onclick="stopPropagation(event)">
         <input type="range" min="0" value="0" />
         <div class="time-display">--:-- / --:--</div>
+      </div>
+    </div>
+
+    <!-- History modal -->
+    <div class="history-modal list-modal modal hidden" onclick="toggleHistoryModal()">
+      <div class="modal-content" onclick="stopPropagation(event)">
+        <div class="items"></div>
       </div>
     </div>
 
