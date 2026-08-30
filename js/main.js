@@ -156,8 +156,8 @@ function parseSubtitle() {
         startTime = parseTimeToSeconds(match[1]);
         endTime = parseTimeToSeconds(match[3]);
       } else if (!/^\d+$/.test(line)) {
-        // Strip inline HTML tags (e.g. <i>...</i>) and prefixes
-        cleanText = line.replace(/<[^>]*>/g, "").replace(/(?:>>|&gt;&gt;)[\s\u00A0]*/g, "");
+        // Strip inline HTML tags (e.g. <i>...</i>), [...] OR the word "heat.", prefixes
+        cleanText = line.replace(/<[^>]*>/g, "").replace(/\[.*?\]|heat\./gi, '').replace(/(?:>>|&gt;&gt;)[\s\u00A0]*/g, "");
       }
     });
 
