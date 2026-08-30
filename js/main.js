@@ -7,6 +7,7 @@ const timeDisplay = document.querySelector(".time-display");
 const historyModal = document.querySelector(".history-modal");
 
 let currentFileName = "converted_subtitle.txt";
+let currentRawText = ""
 let outputText = "";
 let currentSubtitles = [];
 let duration = 0;
@@ -77,8 +78,8 @@ async function openFile(file) {
 
   currentFileName = fileName;
   currentTime = 0;
-  const text = await getFileText(file);
-  parseSubtitle(text);
+  currentRawText = await getFileText(file);
+  parseSubtitle();
   displaySubtitle();
   updateHistory();
 }
@@ -87,10 +88,10 @@ function loadFromHistory(index) {
   const historyItem = historyItems[index];
 
   currentFileName = historyItem.title;
-  currentSubtitles = historyItem.subtitles;
+  currentRawText = historyItem.text;
   currentTime = historyItem.time;
 
-  extractSubtitles();
+  parseSubtitle();
   displaySubtitle();
   toggleHistoryModal(false);
 }
@@ -122,11 +123,11 @@ function parseTimeToSeconds(timeStr) {
 }
 
 // Core Parsing Logic
-function parseSubtitle(rawText) {
-  if (!rawText) return;
+function parseSubtitle() {
+  if (!currentRawText) return;
 
   // 1. Normalize line endings
-  let text = rawText.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  let text = currentRawText.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
 
   // 2. Remove WebVTT headers / metadata
   text = text.replace(/^WEBVTT.*$/gm, "");
@@ -146,7 +147,7 @@ function parseSubtitle(rawText) {
       .filter(Boolean);
     let startTime = 0;
     let endTime = 0;
-    let textLines = [];
+    let cleanText = "";
 
     lines.forEach((line) => {
       // Check if line is a timestamp line
@@ -155,27 +156,17 @@ function parseSubtitle(rawText) {
         startTime = parseTimeToSeconds(match[1]);
         endTime = parseTimeToSeconds(match[3]);
       } else if (!/^\d+$/.test(line)) {
-        // Strip inline HTML tags (e.g. <i>...</i>)
-        const cleanText = line.replace(/<[^>]*>/g, "");
-        if (cleanText) textLines.push(cleanText);
+        // Strip inline HTML tags (e.g. <i>...</i>) and prefixes
+        cleanText = line.replace(/<[^>]*>/g, "").replace(/(?:>>|&gt;&gt;)[\s\u00A0]*/g, "");
       }
     });
 
-    if (textLines.length > 0) {
-      // Strip out bracketed text like [music] or "heat." case-insensitively
-      const cleanedText = textLines
-        .join(" ")
-        .replace(/\[.*?\]|heat\./gi, "")
-        .replace(/\s+/g, " ")
-        .trim();
-
-      if (cleanedText.length > 0) {
-        currentSubtitles.push({
-          startTime,
-          endTime,
-          text: cleanedText,
-        });
-      }
+    if (cleanText) {
+      currentSubtitles.push({
+        startTime,
+        endTime,
+        text: cleanText,
+      });
     }
   });
 
@@ -279,7 +270,7 @@ function updateHistory() {
 
   const newItem = {
     title: currentFileName,
-    subtitles: currentSubtitles,
+    text: currentRawText,
     time: currentTime,
   };
 

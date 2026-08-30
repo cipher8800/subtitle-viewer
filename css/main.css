@@ -216,11 +216,12 @@ header p {
 
 .progress-bar {
   position: absolute;
-  bottom: 50px;
+  bottom: -50px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  width: calc(100% - 20px);
+  width: 500px;
+  max-width: calc(100vw - 20px);
 }
 
 .progress-bar input {
