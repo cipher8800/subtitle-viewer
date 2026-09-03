@@ -246,6 +246,31 @@ header p {
   text-align: center;
 }
 
+.search-bar {
+  position: absolute;
+  top: 50px;
+  right: 10px;
+  display: flex;
+  gap: 10px;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+}
+
+.search-bar input {
+  background-color: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-color);
+}
+
+.search-bar button {
+  background-color: transparent;
+  color: var(--text-color);
+}
+
 .toast {
   position: fixed;
   top: 10px;

@@ -11,6 +11,7 @@
     <script src="js/utils.js" defer></script>
     <script src="js/main.js" defer></script>
     <script src="js/toast.js" defer></script>
+    <script src="js/searchBar.js" defer></script>
   </head>
   <body class="dark-theme">
     <div class="app container">
@@ -59,6 +60,10 @@
             <i class="bi bi-arrow-counterclockwise"></i>
             History
           </div>
+          <div class="search" onclick="SearchBar.toggle(true)">
+            <i class="bi bi-search"></i>
+            Search
+          </div>
           <div class="copy" onclick="copyToCB()">
             <i class="bi bi-clipboard"></i>
             Copy text
@@ -85,6 +90,15 @@
       <div class="modal-content" onclick="stopPropagation(event)">
         <div class="items"></div>
       </div>
+    </div>
+
+    <!-- Search bar -->
+    <div class="search-bar hidden">
+      <input type="text" placeholder="Find..." />
+      <span class="counter">0/0</span>
+      <button class="prev-btn" onclick="SearchBar.searchPrev()"><i class="bi bi-caret-up-fill"></i></button>
+      <button class="next-btn" onclick="SearchBar.searchNext()"><i class="bi bi-caret-down-fill"></i></button>
+      <button class="close-btn" onclick="SearchBar.toggle(false)"><i class="bi bi-x-lg"></i></button>
     </div>
 
     <div class="toast container"></div>
