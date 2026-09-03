@@ -253,6 +253,8 @@ header p {
   transform: translateX(-50%);
   display: flex;
   gap: 10px;
+  width: 500px;
+  max-width: calc(100% - 20px);
   background-color: var(--bg-color);
   color: var(--text-color);
   padding: 10px;
@@ -261,6 +263,7 @@ header p {
 }
 
 .search-bar input {
+  flex: 1;
   background-color: transparent;
   border: none;
   border-bottom: 1px solid var(--border-color);
@@ -300,7 +303,4 @@ header p {
 
 /* Small screens (Phones, up to 480px wide) */
 @media (max-width: 480px) {
-  .search-bar {
-    width: calc(100% - 20px);
-  }
 }
